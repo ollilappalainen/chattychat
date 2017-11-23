@@ -1,13 +1,14 @@
 import React from 'react';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import RaisedButton from 'material-ui/RaisedButton';
+import './App.less';
 
 export default class App extends React.Component {
   render() {
     return (
-        <MuiThemeProvider>
-            <RaisedButton label="Default" />
-        </MuiThemeProvider>
+      <MuiThemeProvider>
+        <div className="app-main">
+        </div>          
+      </MuiThemeProvider>
     );
   }
 }

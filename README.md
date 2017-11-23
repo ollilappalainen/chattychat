@@ -1,7 +1,9 @@
-Real time chat app.
-Uses:
-    -React
-    -Material-UI
-    -Webpack
-    -Yarn
-    -Babel
+#Real time chat app.
+##Technologies:
+  *ES6
+  *React
+  *Material-UI
+  *Less.js
+  *Webpack
+  *Yarn
+  *Babel
