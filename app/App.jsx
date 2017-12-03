@@ -7,8 +7,9 @@ import React from 'react';
 //Material UI imports
 import Grid from 'material-ui/Grid';
 import Paper from 'material-ui/Paper';
-import TextField from 'material-ui/TextField';
+import Input from 'material-ui/Input';
 import Button from 'material-ui/Button';
+import Typography from 'material-ui/Typography';
 
 //Custom imports
 import { Message } from "./models/Message";
@@ -17,27 +18,31 @@ export default class App extends React.Component {
   constructor(props, messages) {
     super(props);
     this.state = {
-      message: 'No Messages.',
-      messages: [],
-    }
+      message: '',
+      messages: [{message: 'No Messages'}],
+      username: 'Pekka',
+      date: Date(),
+      usersOnline: [this.username, 'Destroyer666', 'Hetero', 'LissuPissis', 'ErkkiPekka', 'asdasd69', 'RektalSorm99', 'HerraH', 'Ms.Tervakeuhko'],
+    }    
 
     this.handleChange = this.handleChange.bind(this);
-    this.handleMessageSend = this.handleMessageSend.bind(this);
+    this.handleMessageSendOnButton = this.handleMessageSendOnButton.bind(this);
+    this.handleMessageSendOnEnterPress = this.handleMessageSendOnEnterPress.bind(this);
   }
 
   messages = [];
   
-  handleChange(event) {
-    this.setState({
-      message: event.target.value,
-    });
+  handleChange(event) {    
+      this.setState({
+        message: event.target.value,
+      });    
   }
 
-  handleEnterPress = (event) => {
+  handleMessageSendOnEnterPress = (event) => {
     if (event.charCode === 13) {
       const message = this.state.message;
-      const date = JSON.stringify(Date());
-      const username = 'Pekka';
+      const date = this.state.date;
+      const username = this.state.username;
       let messages = this.messages;
 
       messages.push({
@@ -48,16 +53,17 @@ export default class App extends React.Component {
 
       this.setState({
         messages: messages,
+        message: '',
       });
     }
   }
 
-  handleMessageSend = (event) => {
+  handleMessageSendOnButton = (event) => {
     const message = this.state.message;
-    const date = JSON.stringify(Date());
-    const username = 'Pekka';
-    let messages = [];
-
+    const date = this.state.date;
+    const username = this.state.username;
+    let messages = this.messages;
+    
     messages.push({
       sent: date,
       username: username,
@@ -66,6 +72,7 @@ export default class App extends React.Component {
 
     this.setState({
       messages: messages,
+      message: '',
     });
   }
 
@@ -74,7 +81,9 @@ export default class App extends React.Component {
       <div className="app-main">
         <Grid container>
           <Grid item xs={12}>
-            <Paper className="header">asdasdasd</Paper>
+            <Paper className="header">
+              <h1>ChattyChat 9000</h1>
+            </Paper>
           </Grid>
           <Grid item xs={10}>
             <Paper className="message-container">
@@ -82,27 +91,37 @@ export default class App extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={2}>
-            <Paper className="online-box">asdasdasd</Paper>
+            <Paper className="online-box">
+                <Typography type="headline" component="h3" className="username-box">
+                  Currently Online
+                </Typography>
+                <UsersOnline usersOnline={this.state.usersOnline} />                
+            </Paper>
           </Grid>
           <Grid item xs={2}>
-            <Paper className="username-box">asdasdasd</Paper>
+            <Paper>
+              <Typography type="headline" component="h3" className="username-box">
+                {this.state.username}
+              </Typography>
+            </Paper>
           </Grid>
           <Grid item xs={8}>
             <Paper className="message-input-box">
               <div className="message-input">
-                <TextField
-                  id="message"
+                <Input
+                  id="message-input"
                   label="Message"
                   autoComplete="off"
+                  value={this.state.message}
                   onChange={this.handleChange}
-                  onKeyPress={this.handleEnterPress}
+                  onKeyPress={this.handleMessageSendOnEnterPress}
                   fullWidth>
-                </TextField>
+                </Input>
               </div>              
             </Paper>
           </Grid>
           <Grid item xs={2}>
-            <Button type="submit" color="primary" onClick={this.handleMessageSend}>SEND</Button>
+            <Button raised type="submit" color="accent" onClick={this.handleMessageSendOnButton}>SEND</Button>
           </Grid>
         </Grid>
       </div>
@@ -124,6 +143,7 @@ export class MessagesOutput extends React.Component {
   
   componentDidMount() {
     setInterval(this.updateScroll, 500);
+    this.getElement;
   }
 
   render() {
@@ -133,15 +153,38 @@ export class MessagesOutput extends React.Component {
         <div id="messagelist" className="messagelist">
           <ul>
             {messages.map((message, i) => {
-                return <Paper className="message" key={i}>
-                          <div className="messageHeader">
-                            <p>{message.username} {message.sent}</p>
-                          </div>                          
-                          <div className="messageText">
-                            <p>{message.message}</p>
-                          </div>                          
-                        </Paper>
+                return <Paper className="message" id="id-message" key={i}>
+                  <div>
+                    <div className="message-header">
+                      <h5>{message.username} {message.sent}</h5>
+                    </div>                          
+                    <div className="message-text">
+                      <p>{message.message}</p>
+                    </div>                          
+                  </div>                          
+                </Paper>
               })}
+          </ul>
+        </div>
+      )
+    }
+  }
+}
+
+export class UsersOnline extends React.Component {
+  constructor() {
+    super();
+  }
+  
+  render() {
+    let usersOnline = this.props.usersOnline;
+    if (usersOnline) {
+      return(
+        <div>
+          <ul>
+            {usersOnline.map((user, i) => {
+              return <h5 key={i}>{user}</h5>
+            })}
           </ul>
         </div>
       )

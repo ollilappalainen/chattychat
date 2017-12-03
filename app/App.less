@@ -1,5 +1,16 @@
 html { 
     font-family: 'Roboto', sans-serif; 
+
+    background: rgba(99,65,86, 1.0); /* For browsers that do not support gradients */
+    background: -webkit-linear-gradient(left top, rgba(99,65,86, 1.0), rgba(74, 105, 69, 1.0)); /* For Safari 5.1 to 6.0 */
+    background: -o-linear-gradient(bottom right, rgba(99,65,86, 1.0), rgba(74, 105, 69, 1.0)); /* For Opera 11.1 to 12.0 */
+    background: -moz-linear-gradient(bottom right, rgba(99,65,86, 1.0), rgba(74, 105, 69, 1.0)); /* For Firefox 3.6 to 15 */
+    background: linear-gradient(to bottom right, rgba(99,65,86, 1.0), rgba(74, 105, 69, 1.0)); /* Standard syntax */
+
+    -webkit-background-size: cover;
+    -moz-background-size: cover;
+    -o-background-size: cover;
+    background-size: cover;
 }
 
 .app-main {
@@ -8,27 +19,39 @@ html {
 }
 
 .header {
+    color: white;
+    background: rgba(31,48,56, 1.0) !important;
     height: 100px;
+    text-align: center;
+    padding: 10px;
 }
 
 .message-container {
-    background-color: gray;
+    color: white;
+    background: rgba(31,48,56, 0.8) !important;
     height: 700px;
 }
 
 .online-box {
+    color: white;
+    background-color: rgba(31,48,56, 1.0) !important;
     height: 700px;
 }
 
 .username-box {
+    color: white !important;
+    background-color: rgba(31,48,56, 1.0) !important;
     height: 50px;
 }
 
 .message-input-box {
+    color: white;
+    background-color: rgba(31,48,56, 1.0) !important;
     height: 50px;    
 }
 
 .message-input {
+    color: white !important;
     padding: 0px 15px 0px 15px
 }
 
@@ -38,15 +61,24 @@ html {
     overflow-y: scroll;
 }
 
-.message {          
+.message {  
+    background: rgba(54, 72, 81, 1.0) !important;
     max-width: 700px; 
     display: block;
 }
 
-.messageHeader {
-    padding: 0px 5px 5px 5px;  
+.message-header {
+    padding: 0px 5px;
 }
 
-.messageText {
-    padding: 5px 0px 5px 0px;  
+.message-text {
+    padding: 3px 10px;
+}
+
+.own-message {
+
+}
+
+.online-list {
+    color: white !important;
 }
