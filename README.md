@@ -7,3 +7,5 @@
   * Webpack
   * Yarn
   * Babel
+
+  GNU GENERAL PUBLIC LICENSE Version 3
