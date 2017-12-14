@@ -12,7 +12,8 @@ import Button from 'material-ui/Button';
 import Typography from 'material-ui/Typography';
 
 //Custom imports
-import { Message } from "./models/Message";
+import { Message } from './models/Message';
+import rest from './utils/rest';
 
 export default class App extends React.Component {
   constructor(props, messages) {
@@ -28,6 +29,7 @@ export default class App extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleMessageSendOnButton = this.handleMessageSendOnButton.bind(this);
     this.handleMessageSendOnEnterPress = this.handleMessageSendOnEnterPress.bind(this);
+    this.getMessages = this.getMessages.bind(this);
   }
 
   messages = [];
@@ -74,6 +76,31 @@ export default class App extends React.Component {
       messages: messages,
       message: '',
     });
+  }
+
+  getMessages() {
+    
+  }
+
+  componentDidMount() {    
+    fetch('http://localhost:3000/api/messages')
+    .then(response => {
+      console.log(response);
+      return response.json();
+    })
+    .then(data => {
+      console.log(data);
+      const message = data.message;
+      const sent = data.sent;
+      const username = data.username;
+      let messages = [];
+      messages.push({
+        username: username,
+        message: message,
+        sent: sent
+      });      
+      this.setState({ messages: messages });          
+    });    
   }
 
   render() {
@@ -143,7 +170,7 @@ export class MessagesOutput extends React.Component {
   
   componentDidMount() {
     setInterval(this.updateScroll, 500);
-    this.getElement;
+    this.getElement;    
   }
 
   render() {
