@@ -22,14 +22,15 @@ export default class App extends React.Component {
       message: '',
       messages: [{message: 'No Messages'}],
       username: 'Pekka',
-      date: Date(),
+      date: Date.now(),
+      messagesLoaded: false,
       usersOnline: [this.username, 'Destroyer666', 'Hetero', 'LissuPissis', 'ErkkiPekka', 'asdasd69', 'RektalSorm99', 'HerraH', 'Ms.Tervakeuhko'],
     }    
 
     this.handleChange = this.handleChange.bind(this);
     this.handleMessageSendOnButton = this.handleMessageSendOnButton.bind(this);
     this.handleMessageSendOnEnterPress = this.handleMessageSendOnEnterPress.bind(this);
-    this.getMessages = this.getMessages.bind(this);
+    this.postMessage = this.postMessage.bind(this);
   }
 
   messages = [];
@@ -40,6 +41,19 @@ export default class App extends React.Component {
       });    
   }
 
+  postMessage(message) {
+    if (message) {
+      fetch('http://localhost:3000/api/messages', {
+        method: 'POST',
+        body: JSON.stringify(message)
+      }).then(function(res){
+        return res.json();
+      }).then(function(data){
+        console.log(data);
+      });
+    }
+  }
+
   handleMessageSendOnEnterPress = (event) => {
     if (event.charCode === 13) {
       const message = this.state.message;
@@ -47,11 +61,21 @@ export default class App extends React.Component {
       const username = this.state.username;
       let messages = this.messages;
 
+      let messageToPost;
+      messageToPost = {
+        message: message,
+        sent: date,
+        username: username
+      };
+      console.log(messageToPost);
+
       messages.push({
         sent: date,
         username: username,
         message: message
       });
+
+      this.postMessage(messageToPost);
 
       this.setState({
         messages: messages,
@@ -78,28 +102,21 @@ export default class App extends React.Component {
     });
   }
 
-  getMessages() {
-    
-  }
-
   componentDidMount() {    
     fetch('http://localhost:3000/api/messages')
-    .then(response => {
-      console.log(response);
+    .then(response => {      
       return response.json();
     })
-    .then(data => {
-      console.log(data);
-      const message = data.message;
-      const sent = data.sent;
-      const username = data.username;
-      let messages = [];
-      messages.push({
-        username: username,
-        message: message,
-        sent: sent
-      });      
-      this.setState({ messages: messages });          
+    .then(data => {      
+      let messages = [];     
+      data.map((message) => {
+        messages.push({
+          username: message.username,
+          sent: message.sent,
+          message: message.message
+        });
+        this.setState({ messages: messages });        
+      });              
     });    
   }
 
