@@ -14,6 +14,7 @@ import Typography from 'material-ui/Typography';
 //Custom imports
 import { Message } from './models/Message';
 import rest from './utils/rest';
+import FaAngleDown from 'react-icons/lib/fa/angle-down';
 
 export default class App extends React.Component {
   constructor(props, messages) {
@@ -27,7 +28,8 @@ export default class App extends React.Component {
       usersOnline: [this.username, 'Destroyer666', 'Hetero', 'LissuPissis', 'ErkkiPekka', 'asdasd69', 'RektalSorm99', 'HerraH', 'Ms.Tervakeuhko'],
     }    
 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleUsernameChange = this.handleUsernameChange.bind(this);
     this.handleMessageSendOnButton = this.handleMessageSendOnButton.bind(this);
     this.handleMessageSendOnEnterPress = this.handleMessageSendOnEnterPress.bind(this);
     this.postMessage = this.postMessage.bind(this);
@@ -35,17 +37,28 @@ export default class App extends React.Component {
 
   messages = [];
   
-  handleChange(event) {    
+  handleMessageChange(event) {       
       this.setState({
         message: event.target.value,
       });    
+  }
+
+  handleUsernameChange(event) {    
+    this.setState({
+      username: event.target.value,
+    });    
   }
 
   postMessage(message) {
     if (message) {
       fetch('http://localhost:3000/api/messages', {
         method: 'POST',
-        body: JSON.stringify(message)
+        body: JSON.stringify({
+          username: message.username,
+          sent: message.sent,
+          message: message.message
+        }),
+        headers: {"Content-Type": "application/json"}
       }).then(function(res){
         return res.json();
       }).then(function(data){
@@ -56,8 +69,9 @@ export default class App extends React.Component {
 
   handleMessageSendOnEnterPress = (event) => {
     if (event.charCode === 13) {
+      this.messages = this.state.messages;
       const message = this.state.message;
-      const date = this.state.date;
+      const date = Date.now();
       const username = this.state.username;
       let messages = this.messages;
 
@@ -85,6 +99,7 @@ export default class App extends React.Component {
   }
 
   handleMessageSendOnButton = (event) => {
+    this.messages = this.state.messages;
     const message = this.state.message;
     const date = this.state.date;
     const username = this.state.username;
@@ -143,10 +158,17 @@ export default class App extends React.Component {
             </Paper>
           </Grid>
           <Grid item xs={2}>
-            <Paper>
-              <Typography type="headline" component="h3" className="username-box">
-                {this.state.username}
-              </Typography>
+            <Paper>              
+                <div className="username-box">
+                  <Input
+                    id="username-input"
+                    label="Username"
+                    autoComplete="off"
+                    value={this.state.username}
+                    onChange={this.handleUsernameChange}
+                    fullWidth>
+                  </Input>
+                </div>
             </Paper>
           </Grid>
           <Grid item xs={8}>
@@ -157,8 +179,9 @@ export default class App extends React.Component {
                   label="Message"
                   autoComplete="off"
                   value={this.state.message}
-                  onChange={this.handleChange}
+                  onChange={this.handleMessageChange}
                   onKeyPress={this.handleMessageSendOnEnterPress}
+                  autoFocus
                   fullWidth>
                 </Input>
               </div>              
@@ -199,8 +222,9 @@ export class MessagesOutput extends React.Component {
             {messages.map((message, i) => {
                 return <Paper className="message" id="id-message" key={i}>
                   <div>
-                    <div className="message-header">
+                    <div className="message-header">                      
                       <h5>{message.username} {message.sent}</h5>
+                      <ModifyMessage />
                     </div>                          
                     <div className="message-text">
                       <p>{message.message}</p>
@@ -233,5 +257,48 @@ export class UsersOnline extends React.Component {
         </div>
       )
     }
+  }
+}
+
+export class ModifyMessage extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      isHidden: false,
+    }
+
+    this.toggleButtons = this.toggleButtons.bind(this);
+  }
+
+  toggleButtons = () => {
+    const isHidden = this.state.isHidden;
+    const element = document.getElementById('modifyMessageButtonsList');  
+    switch (isHidden) {
+      case false:
+        this.setState({isHidden: true});
+        element.classList.toggle('hide-el', isHidden);
+        console.log('täällä: ', isHidden, element);
+        break;
+      case true:
+        this.setState({isHidden: false});
+        element.classList.toggle('hide-el', isHidden);
+        console.log('täällä: ', isHidden, element);
+        break;
+    }      
+  }
+
+  render() {
+    return(
+      /** remove class: hide-el from most outer div to show buttons toggle on messages */
+      <div className="modify-message hide-el">
+        <div className="modify-message-arrow" onClick={this.toggleButtons}>
+          <FaAngleDown />
+        </div>
+        <div id="modifyMessageButtonsList" className="modify-message-buttons hide-el">
+          <button>Muokkaa</button>
+          <button>Poista</button>            
+        </div>
+      </div>      
+    )
   }
 }

@@ -76,9 +76,45 @@ html {
 }
 
 .own-message {
+    float: left;
 
 }
 
 .online-list {
     color: white !important;
+}
+
+.modify-message-arrow {
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    &:hover {
+        background-color: rgb(39, 53, 59);
+        cursor: pointer;
+    }    
+}
+
+.modify-message-buttons {
+    background: rgb(39, 53, 59);
+    width: 70px;    
+
+    button {
+        background: rgb(39, 53, 59);
+        color: white;
+        border-style: none;
+        width: 100%;  
+        text-align: left;              
+
+        padding: 5px;
+        margin: 0px;
+
+        &:hover {
+            background: rgb(25, 34, 37);
+            cursor: pointer;
+        }
+    }
+}
+
+.hide-el {
+    display: none !important;
 }
