@@ -15,6 +15,7 @@ import Typography from 'material-ui/Typography';
 import { Message } from './models/Message';
 import rest from './utils/rest';
 import FaAngleDown from 'react-icons/lib/fa/angle-down';
+import TextField from 'material-ui/TextField/TextField';
 
 export default class App extends React.Component {
   constructor(props, messages) {
@@ -101,15 +102,25 @@ export default class App extends React.Component {
   handleMessageSendOnButton = (event) => {
     this.messages = this.state.messages;
     const message = this.state.message;
-    const date = this.state.date;
+    const date = Date.now();
     const username = this.state.username;
     let messages = this.messages;
     
+    let messageToPost;
+    messageToPost = {
+      message: message,
+      sent: date,
+      username: username
+    };
+    console.log(messageToPost);
+
     messages.push({
       sent: date,
       username: username,
       message: message
     });
+
+    this.postMessage(messageToPost);
 
     this.setState({
       messages: messages,
@@ -128,7 +139,8 @@ export default class App extends React.Component {
         messages.push({
           username: message.username,
           sent: message.sent,
-          message: message.message
+          message: message.message,
+          id: message._id
         });
         this.setState({ messages: messages });        
       });              
@@ -224,7 +236,7 @@ export class MessagesOutput extends React.Component {
                   <div>
                     <div className="message-header">                      
                       <h5>{message.username} {message.sent}</h5>
-                      <ModifyMessage />
+                      <ModifyMessage message={message} />
                     </div>                          
                     <div className="message-text">
                       <p>{message.message}</p>
@@ -265,39 +277,90 @@ export class ModifyMessage extends React.Component {
     super();
     this.state = {
       isHidden: false,
+      modify: false,
+      message: '',
+      id: ''    
     }
 
     this.toggleButtons = this.toggleButtons.bind(this);
+    this.collapseButtons = this.collapseButtons.bind(this);
+    this.handleMessageChange = this.handleMessageChange.bind(this);
   }
 
-  toggleButtons = () => {
-    const isHidden = this.state.isHidden;
-    const element = document.getElementById('modifyMessageButtonsList');  
-    switch (isHidden) {
-      case false:
-        this.setState({isHidden: true});
-        element.classList.toggle('hide-el', isHidden);
-        console.log('täällä: ', isHidden, element);
-        break;
-      case true:
-        this.setState({isHidden: false});
-        element.classList.toggle('hide-el', isHidden);
-        console.log('täällä: ', isHidden, element);
-        break;
-    }      
+  componentDidMount = () => {
+    let message = this.props.message;
+    this.setState({
+      message: message.message,
+      id: message.id
+    });
+  }
+
+  handleMessageChange = (event) => {
+    let message = event.target.value;
+    this.setState({
+      message: message
+    });
+  }
+
+  toggleButtons = () => {            
+    this.setState({isHidden: true});                
+  }
+
+  collapseButtons = () => {
+    this.setState({isHidden: false});        
+  }
+
+  putMessage = (message, id) => {
+    if (message) {
+      const url = 'http://localhost:3000/api/messages/' + id;
+      fetch(url, {
+        method: 'PUT',
+        body: JSON.stringify({
+          message: message
+        }),
+        headers: {"Content-Type": "application/json"}
+      }).then(function(res){
+        return res.json();
+      }).then(function(data){
+        console.log(data);
+      });
+    }
+  }
+
+  modifyMessage = () => {    
+    const messageToPost = this.state.message;
+    const id = this.state.id;
+
+    this.putMessage(messageToPost, id);
   }
 
   render() {
-    return(
-      /** remove class: hide-el from most outer div to show buttons toggle on messages */
-      <div className="modify-message hide-el">
-        <div className="modify-message-arrow" onClick={this.toggleButtons}>
-          <FaAngleDown />
+    return(      
+      <div className="modify-message">
+        <div onMouseOver={this.toggleButtons} onMouseLeave={this.collapseButtons}>
+          <div className="modify-message-arrow">
+            <FaAngleDown />
+          </div>
+          { this.state.isHidden ? 
+            <div id="modifyMessageButtonsList" className="modify-message-buttons">
+              <button>Muokkaa</button>
+              <button>Poista</button>            
+            </div>
+          : null }
+        </div>        
+
+        <div id="modifyMessageInput" className="modify-message-input">
+          <Input
+            id="modifyInput"
+            label="Modify Message"
+            autoComplete="off"
+            value={this.state.message}
+            onChange={this.handleMessageChange}
+            fullWidth>
+          </Input>
+          <Button raised type="submit" color="accent" onClick={this.modifyMessage}>DONE</Button>
         </div>
-        <div id="modifyMessageButtonsList" className="modify-message-buttons hide-el">
-          <button>Muokkaa</button>
-          <button>Poista</button>            
-        </div>
+
       </div>      
     )
   }
