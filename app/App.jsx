@@ -97,6 +97,9 @@ export default class App extends React.Component {
         message: '',
       });
     }
+    
+    let messagelist = document.getElementById('messagelist');
+    messagelist.scrollTop = messagelist.scrollHeight;
   }
 
   handleMessageSendOnButton = (event) => {
@@ -126,6 +129,9 @@ export default class App extends React.Component {
       messages: messages,
       message: '',
     });
+
+    let messagelist = document.getElementById('messagelist');
+    messagelist.scrollTop = messagelist.scrollHeight;
   }
 
   componentDidMount() {    
@@ -211,16 +217,34 @@ export default class App extends React.Component {
 export class MessagesOutput extends React.Component {
   constructor() {
     super();
+    this.state = {
+      ifScrolled: false
+    }    
 
     this.updateScroll = this.updateScroll.bind(this);
+    this.handleScroll = this.handleScroll.bind(this);
+  }
+    
+  updateScroll(event){        
+    if (!this.state.ifScrolled) {
+      let element = document.getElementById("messagelist");
+      element.scrollTop = element.scrollHeight;
+    }    
   }
 
-  updateScroll(){
-    let element = document.getElementById("messagelist");
-    element.scrollTop = element.scrollHeight;
+  handleScroll(event) {
+    this.setState({
+      ifScrolled: true
+    });
+
+    if(window.scroll(0, 0)) {
+      this.setState({
+        ifScrolled: false
+      });
+    }
   }
   
-  componentDidMount() {
+  componentDidMount() {            
     setInterval(this.updateScroll, 500);
     this.getElement;    
   }
@@ -229,7 +253,7 @@ export class MessagesOutput extends React.Component {
     let messages = this.props.messages;
     if (messages) {
       return(
-        <div id="messagelist" className="messagelist">
+        <div id="messagelist" className="messagelist" onScroll={this.handleScroll}>
           <ul>
             {messages.map((message, i) => {
                 return <Paper className="message" id="id-message" key={i}>
@@ -285,6 +309,7 @@ export class ModifyMessage extends React.Component {
     this.toggleButtons = this.toggleButtons.bind(this);
     this.collapseButtons = this.collapseButtons.bind(this);
     this.handleMessageChange = this.handleMessageChange.bind(this);
+    this.handleDelete = this.handleDelete.bind(this);
   }
 
   componentDidMount = () => {
@@ -327,11 +352,30 @@ export class ModifyMessage extends React.Component {
     }
   }
 
+  deleteMessage = (id) => {
+    if (id) {
+      const url = 'http://localhost:3000/api/messages/' + id;
+      fetch(url, {
+        method: 'DELETE'
+      })
+      .then(function(res) {
+        return res.json();
+      }).then(function(data){
+        console.log(data);
+      });
+    }
+  }
+
   modifyMessage = () => {    
     const messageToPost = this.state.message;
     const id = this.state.id;
 
     this.putMessage(messageToPost, id);
+  }
+
+  handleDelete = () => {
+    const id = this.state.id;
+    this.deleteMessage(id);
   }
 
   render() {
@@ -344,7 +388,7 @@ export class ModifyMessage extends React.Component {
           { this.state.isHidden ? 
             <div id="modifyMessageButtonsList" className="modify-message-buttons">
               <button>Muokkaa</button>
-              <button>Poista</button>            
+              <button onClick={this.handleDelete}>Poista</button>            
             </div>
           : null }
         </div>        
